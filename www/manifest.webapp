@@ -1,7 +1,7 @@
 {
-  "version": "0.1",
-  "name": "My App",
-  "description": "Your new awesome Open Web App",
+  "version": "1.0",
+  "name": "1Passfox",
+  "description": "1Password client for Firefox OS",
   "launch_path": "/index.html",
   "icons": {
     "16": "/img/icons/mortar-16.png",
@@ -9,24 +9,18 @@
     "128": "/img/icons/mortar-128.png"
   },
   "developer": {
-    "name": "Your Name",
-    "url": "http://yourawesomeapp.com"
+    "name": "Sergi Mansilla",
+    "url": "http://sergimansilla.com"
   },
   "installs_allowed_from": ["*"],
   "appcache_path": "/manifest.appcache",
   "locales": {
     "es": {
-      "description": "Su nueva aplicación impresionante Open Web",
+      "description": "Cliente de 1Password para Firefox OS",
       "developer": {
-        "url": "http://yourawesomeapp.com"
+        "url": "http://sergimansilla.com"
       }
     },
-    "it": {
-      "description": "Il vostro nuovo fantastico Open Web App",
-      "developer": {
-        "url": "http://yourawesomeapp.com"
-      }
-    }
   },
   "default_locale": "en"
 }

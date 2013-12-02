@@ -22,7 +22,7 @@ require.config({
 
     // dependencies
     'angular',
-    'shared/js/async_storage.js',
+//    'shared/js/async_storage.js',
 
     // 1p libs
 //    'js/lib/date_format.js',
@@ -30,7 +30,7 @@ require.config({
     'js/lib/keychain.js',
 
     // services
-    'js/services/database.js',
+//    'js/services/database.js',
     'js/services/dates.js',
     'js/services/http-cache.js',
     'js/services/install.js',
@@ -38,9 +38,8 @@ require.config({
     // controllers
     'js/controllers/login.js',
     'js/controllers/list.js',
-    'js/controllers/add.js',
     'js/controllers/detail.js',
-    'js/controllers/edit.js'
+    'js/controllers/category.js'
   ], function() {
     console.timeEnd('requirejs');
 

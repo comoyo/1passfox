@@ -1,5 +1,6 @@
 /*global angular */
-define(['angular', 'js/lib/keychain'], function(_, keyChain) {
+define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyChain, EventEmitter) {
+  Bus = new EventEmitter();
   var app = angular
     .module('app', ['mobile-navigate'])
     .config(['$routeProvider', function($routeProvider) {
@@ -12,18 +13,20 @@ define(['angular', 'js/lib/keychain'], function(_, keyChain) {
           templateUrl: 'views/login.html',
           controller: 'LoginCtrl'
         })
-        .when('/detail/:id', {
+        .when('/:type', {
+          templateUrl: 'views/category.html',
+          controller: 'CategoryCtrl'
+        })
+        .when('/:type/:uuid', {
           templateUrl: 'views/detail.html',
           controller: 'DetailCtrl'
         })
-        .when('/add', {
-          templateUrl: 'views/edit.html',
-          controller: 'AddCtrl'
-        })
+        /*
         .when('/edit/:id', {
           templateUrl: 'views/edit.html',
           controller: 'EditCtrl'
         })
+        */
         .otherwise({
           redirectTo: '/'
         });
@@ -31,7 +34,7 @@ define(['angular', 'js/lib/keychain'], function(_, keyChain) {
 
   app.controller('MainCtrl', ['$rootScope', '$scope', '$navigate', '$location', '$http',
     function($rootScope, $scope, $navigate, $location, $http) {
-      $rootScope.keyChain = new keyChain();
+      var kc = $rootScope.keyChain = new keyChain();
 
       $http.get('/data/default/encryptionKeys.js')
         .success(function(keys) {
@@ -40,6 +43,14 @@ define(['angular', 'js/lib/keychain'], function(_, keyChain) {
         .error(function(error) {
           console.error(error);
         });
+
+      Bus.on('logout', function() {
+        $scope.items = [];
+        kc.lock();
+        $rootScope.loggedUser = false;
+
+        $location.path("/login");
+      });
 
       $rootScope.$on('$locationChangeStart', function(scope, next, current) {
         if (!$rootScope.loggedUser) {
@@ -51,6 +62,8 @@ define(['angular', 'js/lib/keychain'], function(_, keyChain) {
             $location.path("/login");
           }
         }
+        kc.logoutInterval =
+          window.setTimeout(kc._autoLogout, kc.AUTOLOCK_LENGTH);
       });
 
       $scope.$navigate = $navigate;

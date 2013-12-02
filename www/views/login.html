@@ -1,6 +1,6 @@
 <section>
-  <form class="form-wrapper cf" >
-    <input id="masterLogin" type="password"
+  <form id=login-form" class="form-wrapper cf" ng-class="{invalid: invalid}">
+    <input id="masterLogin" type="password" autofocus="autofocus"
            placeholder="Enter your Master Password" ng-model="pwd" required>
     <button id="submit_login" ng-click="verifyPassword()">LOGIN</button>
   </form>

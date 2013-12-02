@@ -3,11 +3,18 @@ define(['app'], function(app) {
     function LoginCtrl($scope, $rootScope, $location) {
       $scope.pwd = '';
       $scope.verifyPassword = function() {
-        if($scope.keyChain.verifyPassword($scope.pwd) === true){
+        if ($scope.keyChain.verifyPassword($scope.pwd) === true) {
           $rootScope.loggedUser = true;
           $location.path("/");
+        } else {
+          $scope.invalid = true;
+          setTimeout(function() {
+            $scope.$apply(function() {
+              $scope.invalid = false;
+            });
+          }, 200);
         }
-      }
+      };
     }
   ]);
 });

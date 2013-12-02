@@ -13,9 +13,9 @@
 <section data-type="list" class="view">
   <ul>
     <li ng-repeat="item in items">
-      <a ng-tap="$navigate.go('/' + item.title, 'slide')">
+      <a ng-tap="$navigate.go('/' + item.category + '/' + item.uuid, 'slide')">
+        <!--$navigate.go('/' + item.category + '/' + item.uuid, 'slide')-->
         <p>{{item.title}}</p>
-        <p>{{item.count}} items</p>
       </a>
     </li>
   </ul>
