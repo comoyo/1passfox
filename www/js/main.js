@@ -38,8 +38,8 @@ require.config({
     // controllers
     'js/controllers/login.js',
     'js/controllers/list.js',
-    'js/controllers/detail.js',
-    'js/controllers/category.js'
+    'js/controllers/category.js',
+    'js/controllers/detail.js'
   ], function() {
     console.timeEnd('requirejs');
 
