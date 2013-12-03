@@ -14,13 +14,24 @@ define(['app'], function(app) {
         getList(kc.contents);
       }
 
+      function sortFn(a, b) { return a.title > b.title ? 1 : -1 }
+      $scope.title = $routeParams.type || 'Items';
+
       function getList(contents) {
         if ($routeParams.type) {
+          if ($routeParams.type === 'All Items') {
+            return $scope.items = Object.keys(kc._all).map(function(key) {
+              var item = kc._all[key]
+              item.category = 'All Items';
+              return item;
+            }).sort(sortFn)
+          }
+
           var type = $routeParams.type;
           $scope.items = contents[type].map(function(item) {
             item.category = type;
             return item;
-          });
+          }).sort(sortFn);
         }
       }
     }
