@@ -1,6 +1,7 @@
 define(['app'], function(app) {
   app.controller('CategoryCtrl', ['$scope', '$routeParams', '$location', '$http',
     function CategoryCtrl($scope, $routeParams, $location, $http) {
+      $scope.title = $routeParams.type || 'Items';
       var kc = $scope.keyChain;
       if (Object.keys(kc.contents).length === 0) {
         $http.get('/data/default/contents.js')
@@ -15,7 +16,6 @@ define(['app'], function(app) {
       }
 
       function sortFn(a, b) { return a.title > b.title ? 1 : -1 }
-      $scope.title = $routeParams.type || 'Items';
 
       function getList(contents) {
         if ($routeParams.type) {
