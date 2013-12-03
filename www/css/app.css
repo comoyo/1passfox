@@ -21,31 +21,33 @@ body {
   overflow-y: auto;
   height: -moz-calc(100% - 5rem);
 }
+
 .view.detail {
   padding: 1rem;
   font-size: 1.5rem;
 }
 
 /*Clearing Floats*/
-.cf:before, .cf:after{
-  content:"";
-  display:table;
+.cf:before, .cf:after {
+  content: "";
+  display: table;
 }
 
-.cf:after{
-  clear:both;
+.cf:after {
+  clear: both;
 }
 
-.cf{
-  zoom:1;
+.cf {
+  zoom: 1;
 }
+
 /* Form wrapper styling */
 .form-wrapper {
   width: 280px;
   padding: 5px;
   margin: 190px auto 50px auto;
   background: #444;
-  background: rgba(0,0,0,.2);
+  background: rgba(0, 0, 0, .2);
   border-radius: 10px;
   /*box-shadow: 0 1px 1px rgba(0,0,0,.4) inset, 0 1px 0 rgba(255,255,255,.2);*/
 }
@@ -67,22 +69,10 @@ body {
 .form-wrapper input:focus {
   outline: 0;
   background: #fff;
-  box-shadow: 0 0 2px rgba(0,0,0,.8) inset;
-}
-
-.form-wrapper input::-webkit-input-placeholder {
-  color: #999;
-  font-weight: normal;
-  font-style: italic;
+  /*box-shadow: 0 0 2px rgba(0, 0, 0, .8) inset;*/
 }
 
 .form-wrapper input:-moz-placeholder {
-  color: #999;
-  font-weight: normal;
-  font-style: italic;
-}
-
-.form-wrapper input:-ms-input-placeholder {
   color: #999;
   font-weight: normal;
   font-style: italic;
@@ -100,18 +90,22 @@ body {
   width: 50px;
   font: bold 15px/40px 'lucida sans', 'trebuchet MS', 'Tahoma';
   color: #fff;
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
   background: #d83c3c;
-  border-radius: 0 3px 3px 0;
-  text-shadow: 0 -1px 0 rgba(0, 0 ,0, .3);
+  border-radius: 0 5px 5px 0;
+  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);*/
+  /*pointer-events: none;*/
+  -moz-user-focus: ignore;
+  -moz-user-select: none;
+  /*-moz-user-input: disabled;*/
 }
 
-.form-wrapper button:hover{
+.form-wrapper button:hover {
   background: #e54040;
 }
 
 .form-wrapper button:active,
-.form-wrapper button:focus{
+.form-wrapper button:focus {
   background: #c42f2f;
   outline: 0;
 }
@@ -126,12 +120,12 @@ body {
   left: -6px;
 }
 
-.form-wrapper button:hover:before{
+.form-wrapper button:hover:before {
   border-right-color: #e54040;
 }
 
 .form-wrapper button:focus:before,
-.form-wrapper button:active:before{
+.form-wrapper button:active:before {
   border-right-color: #c42f2f;
 }
 
@@ -146,6 +140,7 @@ body {
   animation: shake .5s linear;
   -moz-animation: shake .5s linear;
 }
+
 /* also need keyframes and -moz-keyframes */
 @keyframes shake {
   8%, 41% {

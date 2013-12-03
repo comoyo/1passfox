@@ -22,11 +22,11 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
           controller: 'DetailCtrl'
         })
         /*
-        .when('/edit/:id', {
-          templateUrl: 'views/edit.html',
-          controller: 'EditCtrl'
-        })
-        */
+         .when('/edit/:id', {
+         templateUrl: 'views/edit.html',
+         controller: 'EditCtrl'
+         })
+         */
         .otherwise({
           redirectTo: '/'
         });
@@ -45,30 +45,28 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
         });
 
       Bus.on('logout', function() {
-        $scope.items = [];
         kc.lock();
         $rootScope.loggedUser = false;
-
         $location.path("/login");
       });
 
       $rootScope.$on('$locationChangeStart', function(scope, next, current) {
         if (!$rootScope.loggedUser) {
           // no logged user, we should be going to #login
-          if (next.templateUrl == "views/login.html") {
-            // already going to #login, no redirect needed
-          } else {
+          if (next.templateUrl !== "views/login.html") {
             // not going to #login, we should redirect now
             $location.path("/login");
           }
         }
+
+        // Clear logout timeout on switching page
+        clearInterval(kc.logoutInterval);
         kc.logoutInterval =
           window.setTimeout(kc._autoLogout, kc.AUTOLOCK_LENGTH);
       });
 
       $scope.$navigate = $navigate;
-      var search = $location.search();
-      $navigate.go($location.path(), 'none').search(search);
+      $navigate.go($location.path(), 'none').search($location.search());
     }]);
 
   app.config(['$httpProvider', function($httpProvider) {
@@ -83,15 +81,21 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
       // if there is no touch available, we'll fall back to click
       if (isTouch) {
         var tapping = false;
-        elm.bind('touchstart', function() {
+        elm.bind('touchstart', function(event) {
           tapping = true;
+          console.log('ev', 'touchstart')
+          event.stopImmediatePropagation()
         });
         // prevent firing when someone is f.e. dragging
         elm.bind('touchmove', function() {
+          console.log('ev', 'touchmove')
           tapping = false;
+          event.stopImmediatePropagation()
         });
-        elm.bind('touchend', function() {
-          tapping && scope.$apply(attrs.ngTap);
+        elm.bind('touchend', function(event) {
+          console.log('ev', 'touchend')
+          tapping && scope.$apply(attrs['ngTap'], elm);
+          event.stopImmediatePropagation()
         });
       }
       else {
@@ -101,6 +105,23 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
       }
     };
   });
+  /*
+  app.directive('ngBlur', function () {
+    return function (scope, elem, attrs) {
+      elem.bind('blur', function () {
+        scope.$apply(attrs.ngBlur);
+      });
+    };
+  });
+
+  app.directive('ngFocus', function () {
+    return function (scope, elem, attrs) {
+      elem.bind('focus', function () {
+        scope.$apply(attrs.ngFocus);
+      });
+    };
+  })
+  */
 
   return app;
 });

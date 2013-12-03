@@ -9,15 +9,14 @@ define(['app'], function(app) {
         } else {
           $scope.invalid = true;
 
-          setTimeout(function(){
-            document.getElementById('masterLogin').focus();
-          },50);
+          document.getElementById('masterLogin').focus();
 
           setTimeout(function() {
             $scope.$apply(function() {
               $scope.invalid = false;
             });
-          }, 300);
+//            console.log("ACTIVE", document.activeElement)
+          }, 500);
         }
       };
     }
