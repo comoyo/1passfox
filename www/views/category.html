@@ -1,5 +1,6 @@
 <section role="region">
   <header>
+    <a ng-tap="$navigate.go('/', 'slide', true)"><span class="icon icon-back">back</span></a>
     <menu type="toolbar">
       <!-- install() and the variables come from js/services/install.js -->
       <button ng-tap="install()" ng-show="hasMozApps && !isInstalled">
@@ -7,7 +8,7 @@
       </button>
       <!--<button ng-tap="$navigate.go('/add', 'modal')"><span class="icon icon-compose">add</span></button>-->
     </menu>
-    <h1>My items</h1>
+    <h1>{{title}}</h1>
   </header>
 </section>
 <section data-type="list" class="view">
