@@ -18,10 +18,18 @@ define(['app'], function(app) {
           return;
         }
 
-        console.log(item)
         $scope.item = item;
         $scope.item.username = kc.findItemFieldWithDesignation($scope.item, 'username');
+        $scope.item.password = kc.findItemFieldWithDesignation($scope.item, 'password');
       });
+
+      $scope.pwdType = "password";
+      $scope.revealPass = function() {
+        if ($scope.pwdType === "password")
+          $scope.pwdType = "text";
+        else
+          $scope.pwdType = "password"
+      }
 
     }
   ]);
