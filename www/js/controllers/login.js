@@ -8,11 +8,16 @@ define(['app'], function(app) {
           $location.path("/");
         } else {
           $scope.invalid = true;
+
+          setTimeout(function(){
+            document.getElementById('masterLogin').focus();
+          },50);
+
           setTimeout(function() {
             $scope.$apply(function() {
               $scope.invalid = false;
             });
-          }, 200);
+          }, 300);
         }
       };
     }

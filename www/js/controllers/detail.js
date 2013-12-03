@@ -30,7 +30,6 @@ define(['app'], function(app) {
         else
           $scope.pwdType = "password"
       }
-
     }
   ]);
 });
