@@ -48,7 +48,7 @@ var server = connect()
 
   .use(function(req, res, next) {
     // caching shared files (other files are cached thru appcache)
-   if (req.url.indexOf('/shared/') === 0) {
+    if (req.url.indexOf('/shared/') === 0) {
       res.setHeader('Cache-Control', 'public, max-age=345600'); // 4 days
       res.setHeader('Expires', new Date(Date.now() + 345600000).toUTCString());
     }
@@ -68,30 +68,33 @@ function setup() {
 }
 
 if (isReleaseBuild) {
-  fs.readFile('./www/index.html', 'utf8', function(err, data) {
-    if (err) return console.error('Where is index.html?');
+  fs.readFile('./www/index_template.html', 'utf8', function(err, data) {
+    if (err) return console.error('Where is index_template.html?');
 
-    data = data.replace(
-      '<script defer src="components/requirejs/require.js" data-main="js/main.js"></script>',
-      '<script defer src="js/main-built.js"></script>');
-    data = data.replace(/"css\/main\.css"/, '"css/main-built.css"');
+    var mainJS = fs.readFileSync('./www/js/main-built.js', 'utf8');
+    if (mainJS) {
+      data = data.replace('<!-- script -->', '<script defer src="js/main-built.js"></script>');
+    }
 
-    data = data.replace(
-      '<html><!-- manifest="manifest.appcache" -->',
-      '<html manifest="manifest.appcache">');
+    var mainCSS = fs.readFileSync('./www/shared/style_unstable/lists.css') +
+      fs.readFileSync('./www/shared/style/headers.css') +
+      fs.readFileSync('./www/shared/style/input_areas.css') +
+      fs.readFileSync('./www/shared/style/edit_mode.css') +
+      fs.readFileSync('./www/css/main-built.css');
+    data = data.replace('/**style**/', mainCSS);
 
     var allViews = fs.readdirSync('./www/views')
       .map(function(f) {
         return './www/views/' + f;
       })
       .filter(function(f) {
-        return fs.statSync(f).isFile();
+        return /\.html$/.test(f) && fs.statSync(f).isFile();
       })
       .map(function(f) {
         return '<script type="text/ng-template" id="' +
           f.replace('./www/', '') + '">' +
-            // @todo, properly escape this
-            fs.readFileSync(f, 'utf8') +
+          // @todo, properly escape this
+          fs.readFileSync(f, 'utf8') +
           '</script>';
       });
 
