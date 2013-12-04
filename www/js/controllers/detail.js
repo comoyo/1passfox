@@ -25,24 +25,23 @@ define(['app'], function(app) {
         }
 
         var decryptedFields = item.decrypted_secure_contents;
-
-        if (decryptedFields.fields) {
-          decryptedFields.fields.forEach(function(f) {
-            f.pwdType = isMasked(f) ? 'password' : 'text';
-            f.concealed = isMasked(f);
-          });
-          $scope.fields = decryptedFields.fields;
-        }
-        else {
-          $scope.fields = Object.keys(decryptedFields).map(function(f) {
+        var fields = decryptedFields.fields ||
+          Object.keys(decryptedFields).map(function(f) {
             return {
               designation: f,
-              value: decryptedFields[f],
-              pwdType: isMasked(f) ? 'password' : 'text',
-              concealed: isMasked(f)
+              value: decryptedFields[f]
             };
-          })
-        }
+          });
+
+        $scope.fields = fields.map(function(f) {
+          if (f.type)
+            f.pwdType = f.type === 'P' ? 'password' : 'text';
+          else
+            f.pwdType = isMasked(f.designation) ? 'password' : 'text';
+
+          return f;
+        });
+//        console.log($scope.fields)
       });
 
       $scope.revealPass = function(f) {

@@ -7,10 +7,9 @@ define(['app'], function(app) {
           $rootScope.loggedUser = true;
           $location.path("/");
         } else {
-          $scope.invalid = true;
-
           document.getElementById('masterLogin').focus();
 
+          $scope.invalid = true;
           setTimeout(function() {
             $scope.$apply(function() {
               $scope.invalid = false;

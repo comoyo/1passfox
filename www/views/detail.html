@@ -10,12 +10,12 @@
   <h1>{{item.title}}</h1>
 
   <div class="fieldset" ng-repeat="field in fields">
-    <label for="{{field.$$hashKey}}">{{field.designation}}:</label><br>
+    <label for="{{field.$$hashKey}}">{{field.name || field.designation}}</label><br>
 
     <input id="{{field.$$hashKey}}"
            readonly="readonly"
            type="{{field.pwdType}}" value="{{field.value}}">
-    <button ng-show="{{field.concealed}}"
+    <button ng-show="{{field.pwdType == 'password'}}"
             ng-tap="revealPass(field)">
       {{field.pwdType == "password" ? "Reveal" : "Conceal" }}
     </button>
