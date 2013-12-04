@@ -159,3 +159,19 @@ body {
     transform: translateX(0);
   }
 }
+
+.fieldset {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.fieldset label {
+  font-weight: bold;
+  display: inline-block;
+  vertical-align: baseline;
+  border: 0;
+}
+
+.fieldset input {
+  font-size: 16px;
+}
