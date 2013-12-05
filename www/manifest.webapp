@@ -2,6 +2,7 @@
   "version": "1.0",
   "name": "1Passfox",
   "description": "1Password client for Firefox OS",
+  "type": "privileged",
   "launch_path": "/index.html",
   "icons": {
     "16": "/img/icons/mortar-16.png",

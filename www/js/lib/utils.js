@@ -1,4 +1,5 @@
-define([], function() {
+var utils;
+(function() {
   var hexcase = 0;
   var chrsz = 8;
 // Add integers, wrapping at 2^32. This uses 16-bit operations internally
@@ -70,7 +71,7 @@ define([], function() {
     return str;
   }
 
-  return {
+  utils = {
     safe_add: safe_add,
     str2binb: str2binb,
     binb2str: binb2str,
@@ -79,4 +80,4 @@ define([], function() {
     binb2b64: binb2b64,
     rol: rol
   };
-});
+})();

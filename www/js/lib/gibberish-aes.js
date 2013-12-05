@@ -1,4 +1,3 @@
-define(['js/lib/utils', 'js/lib/sha1'], function(utils, sha1) {
 //  Gibberish-AES
 //		A lightweight Javascript Libray for OpenSSL compatible AES CBC encryption.
 //
@@ -13,6 +12,8 @@ define(['js/lib/utils', 'js/lib/sha1'], function(utils, sha1) {
 //		Usage: Gibberish.encrypt("secret", "password", 256)
 //		Outputs: AES Encrypted text encoded in Base64
 
+var GibberishAES;
+(function() {
   var chrsz = 8;
   var safe_add = utils.safe_add
   var str2binb = utils.str2binb
@@ -23,7 +24,7 @@ define(['js/lib/utils', 'js/lib/sha1'], function(utils, sha1) {
   var rol = utils.rol
   var core_sha1 = sha1.core_sha1;
 
-  var GibberishAES = {
+  GibberishAES = {
     // Spells out 'Salted__'
     SALTED_PREFIX: [83, 97, 108, 116, 101, 100, 95, 95],
     ZERO_IV: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1094,6 +1095,4 @@ define(['js/lib/utils', 'js/lib/sha1'], function(utils, sha1) {
       }
     }
   }
-
-  return GibberishAES;
-});
+})();

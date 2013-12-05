@@ -12,7 +12,7 @@ define(['app'], function(app) {
       var checkIfInstalled = navigator.mozApps.getSelf();
       checkIfInstalled.onsuccess = function() {
         $rootScope.isInstalled = !!checkIfInstalled.result;
-        $rootScope.$apply();
+        $rootScope.$$phase || $rootScope.$apply();
       };
     }
 
@@ -24,7 +24,7 @@ define(['app'], function(app) {
       var installApp = navigator.mozApps.install(manifestURL);
       installApp.onsuccess = function() {
         $rootScope.isInstalled = true;
-        $rootScope.$apply();
+        $rootScope.$$phase || $rootScope.$apply();
       };
       installApp.onerror = function() {
         alert('Install failed\n\n:' + installApp.error.name);

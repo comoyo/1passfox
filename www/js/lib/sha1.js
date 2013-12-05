@@ -1,4 +1,3 @@
-define(['js/lib/utils'], function(utils) {
 //
 // A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
 // in FIPS PUB 180-1
@@ -7,6 +6,9 @@ define(['js/lib/utils'], function(utils) {
 // Distributed under the BSD License
 // See http://pajhome.org.uk/crypt/md5 for details.
 //
+
+var sha1;
+(function() {
 
   var safe_add = utils.safe_add
   var str2binb = utils.str2binb
@@ -121,9 +123,7 @@ define(['js/lib/utils'], function(utils) {
     return core_sha1(opad.concat(hash), 512 + 160);
   }
 
-  return {
+  sha1 = {
     core_sha1: core_sha1
   }
-});
-
-
+})();

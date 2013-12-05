@@ -1,11 +1,12 @@
 /*global angular */
-define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyChain, EventEmitter) {
+define(['angular', 'Keychain', 'EventEmitter'], function(_, keyChain, EventEmitter) {
   Bus = new EventEmitter();
   var app = angular
     .module('app', ['mobile-navigate'])
-    .config(['$routeProvider', function($routeProvider) {
+    .config(function($locationProvider, $routeProvider) {
+//      $locationProvider.html5Mode(true);
       $routeProvider
-        .when('/', {
+        .when('/list', {
           templateUrl: 'views/list.html',
           controller: 'ListCtrl'
         })
@@ -30,20 +31,28 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
         .otherwise({
           redirectTo: '/'
         });
-    }]);
+    });
 
   app.controller('MainCtrl', ['$rootScope', '$scope', '$navigate', '$location', '$http',
     function($rootScope, $scope, $navigate, $location, $http) {
-      var kc = $rootScope.keyChain = new keyChain();
+      var kc = $rootScope.keyChain = new Keychain();
+      var client = $rootScope.DropboxClient =
+        new Dropbox.Client({ key: "ioiuz7xcr9ig0u1" });
 
-      $http.get('/data/default/encryptionKeys.js')
-        .success(function(keys) {
-          $scope.keyChain.setEncryptionKeys(keys);
-        })
-        .error(function(error) {
-          console.error(error);
-        });
+      client.authDriver(new Dropbox.AuthDriver.Popup({
+        rememberUser: true,
+        receiverUrl: "https://firetext.codexa.org/auth/success/dropbox/"
+      }));
 
+      /*
+       $http.get('/data/default/encryptionKeys.js')
+       .success(function(keys) {
+       $scope.keyChain.setEncryptionKeys(keys);
+       })
+       .error(function(error) {
+       console.error(error);
+       });
+       */
       Bus.on('logout', function() {
         kc.lock();
         $rootScope.loggedUser = false;
@@ -53,7 +62,7 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
       $rootScope.$on('$locationChangeStart', function(scope, next, current) {
         if (!$rootScope.loggedUser) {
           // no logged user, we should be going to #login
-          if (next.templateUrl !== "views/login.html") {
+          if (/login$/.test(next) === false) {
             // not going to #login, we should redirect now
             $location.path("/login");
           }
@@ -83,19 +92,13 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
         var tapping = false;
         elm.bind('touchstart', function(event) {
           tapping = true;
-          console.log('ev', 'touchstart')
-          event.stopImmediatePropagation()
         });
         // prevent firing when someone is f.e. dragging
         elm.bind('touchmove', function() {
-          console.log('ev', 'touchmove')
           tapping = false;
-          event.stopImmediatePropagation()
         });
         elm.bind('touchend', function(event) {
-          console.log('ev', 'touchend')
           tapping && scope.$apply(attrs['ngTap'], elm);
-          event.stopImmediatePropagation()
         });
       }
       else {
@@ -106,22 +109,22 @@ define(['angular', 'js/lib/keychain', 'js/lib/event_emitter'], function(_, keyCh
     };
   });
   /*
-  app.directive('ngBlur', function () {
-    return function (scope, elem, attrs) {
-      elem.bind('blur', function () {
-        scope.$apply(attrs.ngBlur);
-      });
-    };
-  });
+   app.directive('ngBlur', function () {
+   return function (scope, elem, attrs) {
+   elem.bind('blur', function () {
+   scope.$apply(attrs.ngBlur);
+   });
+   };
+   });
 
-  app.directive('ngFocus', function () {
-    return function (scope, elem, attrs) {
-      elem.bind('focus', function () {
-        scope.$apply(attrs.ngFocus);
-      });
-    };
-  })
-  */
+   app.directive('ngFocus', function () {
+   return function (scope, elem, attrs) {
+   elem.bind('focus', function () {
+   scope.$apply(attrs.ngFocus);
+   });
+   };
+   })
+   */
 
   return app;
 });
