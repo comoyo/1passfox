@@ -23,13 +23,7 @@ var ERROR_BAD_DECRYPT = "Decryption failed",
   ERROR_INVALID_JSON = "Decryption passed but JSON was invalid",
   ERROR_OK = "OK";
 
-String.prototype.escapeHTML = function() {
-  return this.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
 function Keychain() {
-  EventEmitter.call(this);
-
   this.AUTOLOCK_LENGTH = 1 * 60 * 1000;
   this.autoLogoutTime = null;
   this.contents = {};
@@ -73,8 +67,6 @@ Keychain.prototype.decryptEncryptionKey = function(sl, password) {
       return decryptedKey;
     }
   }
-
-  return null;
 }
 
 Keychain.prototype.keyForItem = function(item) {
@@ -218,8 +210,7 @@ Keychain.prototype.findItemFieldWithDesignation = function(item, designation) {
     return f.designation == designation;
   })[0];
 
-  if (field)
-    return field
+  return field
 };
 
 function encodeToHex(str) {

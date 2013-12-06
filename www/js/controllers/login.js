@@ -1,4 +1,4 @@
-define(['app'], function(app) {
+define(['app', 'io'], function(app, IO) {
   app.controller('LoginCtrl', ['$scope', '$rootScope', '$location',
     function LoginCtrl($scope, $rootScope, $location) {
       $scope.pwd = '';
@@ -13,11 +13,10 @@ define(['app'], function(app) {
         $rootScope.readyToLogin = readyOrNot;
       }
 
-      $scope.DropboxClient.authenticate(function(error, client) {
-        if (error) {
-          return handleError(error);
-        }
+      IO.getKeys(function(err, keys) {
+        if (err) return handleError(err);
 
+        $scope.keyChain.setEncryptionKeys(keys);
         setReady(true);
       });
 

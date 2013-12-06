@@ -1,6 +1,6 @@
-/*global angular */
 define(['angular', 'Keychain', 'EventEmitter'], function(_, keyChain, EventEmitter) {
   Bus = new EventEmitter();
+
   var app = angular
     .module('app', ['mobile-navigate'])
     .config(function($locationProvider, $routeProvider) {
@@ -22,34 +22,24 @@ define(['angular', 'Keychain', 'EventEmitter'], function(_, keyChain, EventEmitt
           templateUrl: 'views/detail.html',
           controller: 'DetailCtrl'
         })
-        /*
-         .when('/edit/:id', {
-         templateUrl: 'views/edit.html',
-         controller: 'EditCtrl'
-         })
-         */
         .otherwise({
           redirectTo: '/'
         });
     });
 
   app.controller('MainCtrl', ['$rootScope', '$scope', '$navigate', '$location', '$http',
-    function($rootScope, $scope, $navigate, $location, $http) {
+    function($rootScope, $scope, $navigate, $location) {
       var kc = $rootScope.keyChain = new Keychain();
+      /**
+       * Reset the logout timeout, to be used when users are interacting with
+       * the app so that we don't log them out.
+       */
       $rootScope.resetLogoutInterval = function() {
         // Clear logout timeout on switching page
         clearInterval(kc.logoutInterval);
         kc.logoutInterval =
           window.setTimeout(kc._autoLogout, kc.AUTOLOCK_LENGTH);
       };
-
-      var client = $rootScope.DropboxClient =
-        new Dropbox.Client({ key: "ioiuz7xcr9ig0u1" });
-
-      client.authDriver(new Dropbox.AuthDriver.Popup({
-        rememberUser: true,
-        receiverUrl: "http://localhost:8000/dropbox.html"
-      }));
 
       /*
        $http.get('/data/default/encryptionKeys.js')
@@ -112,23 +102,6 @@ define(['angular', 'Keychain', 'EventEmitter'], function(_, keyChain, EventEmitt
       }
     };
   });
-  /*
-   app.directive('ngBlur', function () {
-   return function (scope, elem, attrs) {
-   elem.bind('blur', function () {
-   scope.$apply(attrs.ngBlur);
-   });
-   };
-   });
-
-   app.directive('ngFocus', function () {
-   return function (scope, elem, attrs) {
-   elem.bind('focus', function () {
-   scope.$apply(attrs.ngFocus);
-   });
-   };
-   })
-   */
 
   return app;
 });

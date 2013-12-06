@@ -1,15 +1,11 @@
 /*global angular */
 require.config({
   shim: {
-    'angular': {
-      exports: 'angular'
-    },
-    'EventEmitter': {
-      exports: 'EventEmitter'
-    },
-    'Utils': {
-      exports: 'Utils'
-    },
+    'io': { exports: 'io' },
+    'angular': { exports: 'angular' },
+    'EventEmitter': { exports: 'EventEmitter' },
+    'Utils': { exports: 'Utils' },
+
     'SHA1': {
       deps: ['Utils'],
       exports: 'SHA1'
@@ -30,7 +26,9 @@ require.config({
     GibberishAES: 'js/lib/gibberish-aes',
     Utils: 'js/lib/utils',
     SHA1: 'js/lib/sha1',
-    Keychain: 'js/lib/keychain'
+    Keychain: 'js/lib/keychain',
+    io: 'js/lib/io',
+    dbox: 'js/lib/dbox'
   },
   baseUrl: ''
 });
@@ -46,17 +44,8 @@ require.config({
     'angular',
     'shared/js/async_storage.js',
 
-    // 1p libs
-//    'js/lib/date_format.js',
-//    'js/lib/event_emitter.js',
-//    'js/lib/gibberish-aes.js',
-//    'js/lib/keychain.js',
-
-    // services
-//    'js/services/database.js',
-    'js/services/dates.js',
-    'js/services/http-cache.js',
-    'js/services/install.js',
+//    'js/services/http-cache.js',
+//    'js/services/install.js',
 
     // controllers
     'js/controllers/login.js',
