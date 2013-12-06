@@ -36,12 +36,19 @@ define(['angular', 'Keychain', 'EventEmitter'], function(_, keyChain, EventEmitt
   app.controller('MainCtrl', ['$rootScope', '$scope', '$navigate', '$location', '$http',
     function($rootScope, $scope, $navigate, $location, $http) {
       var kc = $rootScope.keyChain = new Keychain();
+      $rootScope.resetLogoutInterval = function() {
+        // Clear logout timeout on switching page
+        clearInterval(kc.logoutInterval);
+        kc.logoutInterval =
+          window.setTimeout(kc._autoLogout, kc.AUTOLOCK_LENGTH);
+      };
+
       var client = $rootScope.DropboxClient =
         new Dropbox.Client({ key: "ioiuz7xcr9ig0u1" });
 
       client.authDriver(new Dropbox.AuthDriver.Popup({
         rememberUser: true,
-        receiverUrl: "https://firetext.codexa.org/auth/success/dropbox/"
+        receiverUrl: "http://localhost:8000/dropbox.html"
       }));
 
       /*
@@ -68,10 +75,7 @@ define(['angular', 'Keychain', 'EventEmitter'], function(_, keyChain, EventEmitt
           }
         }
 
-        // Clear logout timeout on switching page
-        clearInterval(kc.logoutInterval);
-        kc.logoutInterval =
-          window.setTimeout(kc._autoLogout, kc.AUTOLOCK_LENGTH);
+        $rootScope.resetLogoutInterval();
       });
 
       $scope.$navigate = $navigate;
