@@ -29,11 +29,18 @@
         loggedIn: false,
         loginField: '',
         categories: [],
-        category: ''
+        category: '',
+        selectedItem: {
+          uuid: 'D05256408DE8485886F15FA9C6B3198D',
+          title: 'A',
+          fields: []
+        }
       };
     },
 
     componentDidMount: function() {
+      localStorage.credentials || (localStorage.credentials = {});
+
       var self = this;
       queue(2)
         .defer(Utils.XHRGet, "/data/default/encryptionKeys.js")
@@ -67,29 +74,95 @@
       Utils.store('react-todos', this.state.todos);
     },
 
+    switchToType: function(type) {
+      this.setState({
+        category: type,
+        sectionTitle: type
+      });
+    },
+
+    switchToItem: function(item) {
+      var self = this;
+      if (localStorage['credential-' + item.uuid]) {
+        getItemData(JSON.parse(localStorage['credential-' + item.uuid]))
+      } else {
+        Utils.XHRGet('/data/default/' + item.uuid + '.1password', function(err, data) {
+          var item = kc.getItem(data);
+          localStorage['credential-' + item.uuid] = JSON.stringify(item);
+          getItemData(item);
+        });
+      }
+
+      function getItemData(item) {
+        var decryption_status;
+        try {
+          decryption_status = kc.decryptItem(item);
+        }
+        catch (e) {
+          console.error("Error: " + e);
+        }
+
+        if (decryption_status != "OK") {
+          alert("An error occurred while processing item '" + item.uuid + "'.\n\n" + decryption_status);
+          return;
+        }
+        var decryptedFields = item.decrypted_secure_contents;
+        var fields = decryptedFields.fields ||
+          Object.keys(decryptedFields).map(function(f) {
+            return {
+              designation: f,
+              value: decryptedFields[f]
+            };
+          });
+
+        var obj = JSON.parse(JSON.stringify(item));
+        obj.fields = fields;
+
+        self.setState({
+          sectionTitle: item.title,
+          selectedItem: obj,
+          screen: 'detail'
+        })
+      }
+    },
+
     render: function() {
       var main = null;
       var value = this.state.loginField;
 
       if (this.state.loggedIn === true) {
-        var items = this.state.categories.concat();
-        console.log(this.state.contents, this.state.category)
-        main = <section id="main">
-          <MenuBar items={items} />
+        var cx = React.addons.classSet;
+        var classes = cx({
+          'container': true,
+          'item-view': this.state.screen === 'detail'
+        });
+
+        console.log(classes)
+
+        main = <div className="main-container">
+          <MenuBar onMenuClick={this.switchToType} items={this.state.categories} />
           <div className="main-content">
-          <List items={this.state.contents[this.state.category]} />
+            <Header title={this.state.sectionTitle}/>
+            <div className={classes}>
+              <div className="content-list">
+                <List onItemClick={this.switchToItem} items={this.state.contents[this.state.category]} />
+              </div>
+              <div className="item-page">
+                <Item item={this.state.selectedItem}/>
+              </div>
             </div>
-        </section>
+          </div>
+        </div >
       } else {
         main = (
-          <section id="main">
+          <div className="main-container">
             <input id="login_field" type="password" onChange={this.handleLoginChange} value={value} />
             <button id="submit_login" onClick={this.submitLogin} tabIndex="-1">LOGIN</button>
-          </section>
+          </div>
           );
       }
 
-      return ( <div> {main} </div> );
+      return <section id="main">{main}</section>;
     },
 
     handleLoginChange: function(event) {

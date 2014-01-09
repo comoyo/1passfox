@@ -12,13 +12,18 @@
   'use strict';
 
   window.List = React.createClass({
-    componentDidUpdate: function() {
-      Utils.store('react-todos', this.state.todos);
+    handleClick: function(item) {
+      this.props.onItemClick(item)
+    },
+
+    shouldComponentUpdate: function(nextProps, nextState) {
+      return this.props.items !== nextProps.items;
     },
 
     render: function() {
+      var self = this;
       var createItem = function(item) {
-        return React.DOM.li(null, item.title);
+        return React.DOM.li( {onClick:self.handleClick.bind(self, item)}, item.title);
       };
       return React.DOM.ul(null, this.props.items.map(createItem));
     }

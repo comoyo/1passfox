@@ -17,7 +17,7 @@
           <a
           href="#"
           className="side-nav__button"
-          onClick="this.props.onClick">{this.props.title}</a>
+          onClick={this.props.onMenuItemClick}>{this.props.title}</a>
         </li>
 			);
 		}

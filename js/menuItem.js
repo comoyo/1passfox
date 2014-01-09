@@ -17,7 +17,7 @@
           React.DOM.a(
           {href:"#",
           className:"side-nav__button",
-          onClick:"this.props.onClick"}, this.props.title)
+          onClick:this.props.onMenuItemClick}, this.props.title)
         )
 			);
 		}
