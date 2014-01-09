@@ -1,8 +1,0 @@
-<section>
-  <form id="login-form" ng-show="readyToLogin" class="form-wrapper cf" ng-class="{invalid: invalid}">
-    <input id="masterLogin" type="password" autofocus="autofocus"
-           placeholder="Enter your Master Password" ng-model="pwd"/>
-    <button id="submit_login" ng-tap="verifyPassword()" tabindex="-1">LOGIN</button>
-  </form>
-  <p ng-show="errorMsg">{{errorMsg}}</p>
-</section>
