@@ -21,5 +21,21 @@
       };
       return React.DOM.ul(null, this.props.items.map(createItem));
     }
-  })
+  });
+
+  window.Item = React.createClass({
+    getInitialState: function() {
+      return { fields: [] };
+    },
+
+    render: function() {
+      var fields = this.props.item.fields.map(function(f) {
+        return React.DOM.li(null, f.name,": ", f.value)
+      });
+
+      return React.DOM.div(null, 
+        React.DOM.ul(null, fields)
+      )
+    }
+  });
 })(window, React);

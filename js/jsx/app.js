@@ -12,7 +12,6 @@
   var OneApp = React.createClass({
     getInitialState: function() {
 
-      var todos = Utils.store('react-todos');
       return {
         contents: [],
         loggedIn: false,
@@ -77,7 +76,7 @@
     },
 
     componentDidUpdate: function() {
-      Utils.store('react-todos', this.state.todos);
+//      Utils.store('react-todos', this.state.todos);
     },
 
     switchToType: function(type) {

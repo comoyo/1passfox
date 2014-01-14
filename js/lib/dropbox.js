@@ -12,7 +12,6 @@ var cloud = {}
 cloud.dropbox = {};
 
 // Dropbox
-var welcomeDropboxArea, welcomeDropboxList, openDialogDropboxArea, openDialogDropboxList;
 cloud.dropbox.client = undefined;
 
 
@@ -34,7 +33,7 @@ cloud.dropbox.auth.onAuth = new CustomEvent('cloud.dropbox.authed');
 ------------------------*/
 cloud.dropbox.enumerate = function (directory, callback) {
   if (directory && cloud.dropbox.client && cloud.dropbox.client.readdir(directory)) {
-    var docs = cloud.dropbox.client.readdir(directory, function(error, entries) {
+    cloud.dropbox.client.readdir(directory, function(error, entries) {
       if (!error) {
         for (var i = 0; i < entries.length; i++) {
           var dir;
