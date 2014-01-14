@@ -33,37 +33,39 @@
       var self = this;
       var client = cloud.dropbox.auth;
 
-      client.authenticate(function(error, client) {
-        if (error || !client) {
-          alert("Error authenticating with Dropbox");
-        }
+      if (!client.isAuthenticated()) {
+        client.authenticate(function(error, client) {
+          if (error || !client) {
+            alert("Error authenticating with Dropbox");
+          }
 
-        queue(2)
-          .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
-          .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
-          .await(function(error, keys, contents) {
-            if (error) {
-              return alert("Error retrieving 1password files from Dropbox");
-            }
+          queue(2)
+            .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
+            .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
+            .await(function(error, keys, contents) {
+              if (error) {
+                return alert("Error retrieving 1password files from Dropbox");
+              }
 
-            keys = JSON.parse(keys);
-            contents = JSON.parse(contents);
+              keys = JSON.parse(keys);
+              contents = JSON.parse(contents);
 
-            kc.setEncryptionKeys(keys);
-            self.state.contents = kc.setContents(contents);
+              kc.setEncryptionKeys(keys);
+              self.state.contents = kc.setContents(contents);
 
-            var categories = Object.keys(self.state.contents);
-            self.setState({
-              category: categories[0],
-              categories: categories.map(function(ct) {
-                return {
-                  name: ct,
-                  count: self.state.contents[ct].length
-                }
+              var categories = Object.keys(self.state.contents);
+              self.setState({
+                category: categories[0],
+                categories: categories.map(function(ct) {
+                  return {
+                    name: ct,
+                    count: self.state.contents[ct].length
+                  }
+                })
               })
             })
-          })
-      });
+        });
+      }
 
 //      var router = Router({
 //        '/': this.setState.bind(this, {nowShowing: ALL_TODOS}),
@@ -90,7 +92,7 @@
       if (localStorage['credential-' + item.uuid]) {
         getItemData(JSON.parse(localStorage['credential-' + item.uuid]))
       } else {
-        cloud.dropbox.auth.readFile('1Password.agilekeychai/data/default/' + item.uuid + '.1password', function(err, data) {
+        cloud.dropbox.auth.readFile('1Password.agilekeychain/data/default/' + item.uuid + '.1password', function(err, data) {
           var item = kc.getItem(data);
           localStorage['credential-' + item.uuid] = JSON.stringify(item);
           getItemData(item);
@@ -156,11 +158,12 @@
           )
         )
       } else {
+        var disabled = !cloud.dropbox.auth.isAuthenticated();
         main = (
           React.DOM.div( {className:"main-container login-screen"}, 
             React.DOM.form( {id:"login-form", className:"form-wrapper cf"}, 
-              React.DOM.input( {id:"login_field", type:"password", autofocus:"autofocus",
-              placeholder:"Enter your Master Password",
+              React.DOM.input( {id:"login_field", type:"password", autofocus:true,
+              placeholder:"Enter your Master Password", disabled:disabled ? "disabled" : "",
               onChange:this.handleLoginChange, value:value} ),
               React.DOM.button( {id:"submit_login", onClick:this.submitLogin, tabIndex:"-1"}, "LOGIN")
             )

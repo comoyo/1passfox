@@ -1,11 +1,7 @@
 /**
  * @jsx React.DOM
  */
-/*jshint quotmark: false */
-/*jshint white: false */
-/*jshint trailing: false */
-/*jshint newcap: false */
-/*global React, Utils */
+
 (function(window) {
   'use strict';
 
