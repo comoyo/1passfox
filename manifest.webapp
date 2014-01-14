@@ -1,6 +1,7 @@
 {
   "version": "1.0",
   "name": "1Passfox",
+  "type": "privileged",
   "description": "1Password client for Firefox OS",
   "launch_path": "/index.html",
   "icons": {

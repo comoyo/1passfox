@@ -1,12 +1,6 @@
 /**
  * @jsx React.DOM
  */
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
-/*global Utils, ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS,
- TodoItem, TodoFooter, React, Router*/
 
 (function(window, React) {
   'use strict';
@@ -163,9 +157,13 @@
         )
       } else {
         main = (
-          React.DOM.div( {className:"main-container"}, 
-            React.DOM.input( {id:"login_field", type:"password", onChange:this.handleLoginChange, value:value} ),
-            React.DOM.button( {id:"submit_login", onClick:this.submitLogin, tabIndex:"-1"}, "LOGIN")
+          React.DOM.div( {className:"main-container login-screen"}, 
+            React.DOM.form( {id:"login-form", className:"form-wrapper cf"}, 
+              React.DOM.input( {id:"login_field", type:"password", autofocus:"autofocus",
+              placeholder:"Enter your Master Password",
+              onChange:this.handleLoginChange, value:value} ),
+              React.DOM.button( {id:"submit_login", onClick:this.submitLogin, tabIndex:"-1"}, "LOGIN")
+            )
           )
           );
       }

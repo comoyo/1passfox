@@ -5,7 +5,7 @@
 
 'use strict';
 
-
+var cloud = {}
 /* Variables
 ------------------------*/
 // Namespaces
