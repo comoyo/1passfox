@@ -11,14 +11,9 @@
 (function(window, React) {
   'use strict';
 
-  React.initializeTouchEvents(true)
+  React.initializeTouchEvents(true);
 
-  window.ALL_TODOS = 'all';
-  window.ACTIVE_TODOS = 'active';
-  window.COMPLETED_TODOS = 'completed';
   window.kc = new Keychain();
-
-  var ENTER_KEY = 13;
 
   var OneApp = React.createClass({
     getInitialState: function() {
@@ -42,24 +37,39 @@
       localStorage.credentials || (localStorage.credentials = {});
 
       var self = this;
-      queue(2)
-        .defer(Utils.XHRGet, "/data/default/encryptionKeys.js")
-        .defer(Utils.XHRGet, "/data/default/contents.js")
-        .await(function(err, keys, contents) {
-          kc.setEncryptionKeys(keys);
-          self.state.contents = kc.setContents(contents);
+      var client = cloud.dropbox.auth;
 
-          var categories = Object.keys(self.state.contents);
-          self.setState({
-            category: categories[0],
-            categories: categories.map(function(ct) {
-              return {
-                name: ct,
-                count: self.state.contents[ct].length
-              }
+      client.authenticate(function(error, client) {
+        if (error || !client) {
+          alert("Error authenticating with Dropbox");
+        }
+
+        queue(2)
+          .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
+          .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
+          .await(function(error, keys, contents) {
+            if (error) {
+              return alert("Error retrieving 1password files from Dropbox");
+            }
+
+            keys = JSON.parse(keys);
+            contents = JSON.parse(contents);
+
+            kc.setEncryptionKeys(keys);
+            self.state.contents = kc.setContents(contents);
+
+            var categories = Object.keys(self.state.contents);
+            self.setState({
+              category: categories[0],
+              categories: categories.map(function(ct) {
+                return {
+                  name: ct,
+                  count: self.state.contents[ct].length
+                }
+              })
             })
           })
-        });
+      });
 
 //      var router = Router({
 //        '/': this.setState.bind(this, {nowShowing: ALL_TODOS}),
@@ -86,7 +96,7 @@
       if (localStorage['credential-' + item.uuid]) {
         getItemData(JSON.parse(localStorage['credential-' + item.uuid]))
       } else {
-        Utils.XHRGet('/data/default/' + item.uuid + '.1password', function(err, data) {
+        cloud.dropbox.auth.readFile('1Password.agilekeychai/data/default/' + item.uuid + '.1password', function(err, data) {
           var item = kc.getItem(data);
           localStorage['credential-' + item.uuid] = JSON.stringify(item);
           getItemData(item);
@@ -136,8 +146,6 @@
           'container': true,
           'item-view': this.state.screen === 'detail'
         });
-
-        console.log(classes)
 
         main = <div className="main-container">
           <MenuBar onMenuClick={this.switchToType} items={this.state.categories} />
