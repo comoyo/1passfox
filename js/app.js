@@ -27,8 +27,6 @@
     },
 
     componentDidMount: function() {
-      localStorage.credentials || (localStorage.credentials = {});
-
       var self = this;
       var client = cloud.dropbox.auth;
 
@@ -109,15 +107,19 @@
 
     switchToItem: function(item) {
       var self = this;
-      if (localStorage['credential-' + item.uuid]) {
-        getItemData(JSON.parse(localStorage['credential-' + item.uuid]))
-      } else {
-        cloud.dropbox.auth.readFile('1Password.agilekeychain/data/default/' + item.uuid + '.1password', function(err, data) {
-          var item = kc.getItem(data);
-          localStorage['credential-' + item.uuid] = JSON.stringify(item);
-          getItemData(item);
-        });
-      }
+      var itemDbName ='1pItem-' + item.uuid;
+      asyncStorage.getItem(itemDbName, function(err, obj) {
+        if (!obj) {
+          cloud.dropbox.auth.readFile('1Password.agilekeychain/data/default/' + item.uuid + '.1password', function(err, data) {
+            var item = kc.getItem(data);
+            asyncStorage.setItem(itemDbName, function() {})
+            getItemData(item);
+          });
+        }
+        else {
+          getItemData(obj);
+        }
+      });
 
       function getItemData(item) {
         var decryption_status;
