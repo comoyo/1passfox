@@ -38,30 +38,51 @@
             alert("Error authenticating with Dropbox");
           }
 
-          queue(2)
-            .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
-            .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
-            .await(function(error, keys, contents) {
-              if (error) {
-                return alert("Error retrieving 1password files from Dropbox");
-              }
+          function setup(error, keys, contents) {
+            if (error) {
+              return alert("Error retrieving 1password files from Dropbox");
+            }
 
-              keys = JSON.parse(keys);
-              contents = JSON.parse(contents);
+            if (typeof keys === 'string') keys = JSON.parse(keys);
+            if (typeof contents === 'string') contents = JSON.parse(contents);
 
-              kc.setEncryptionKeys(keys);
-              self.state.contents = kc.setContents(contents);
+            queue(2)
+              .defer(asyncStorage.setItem, '1p.encryptionKeys', keys)
+              .defer(asyncStorage.setItem, '1p.contents', contents)
+              .await(function(error) {
+                if (error) {
+                  alert('There was an error when trying to save data in database: ' + error);
+                }
+              });
 
-              var categories = Object.keys(self.state.contents);
-              self.setState({
-                category: categories[0],
-                categories: categories.map(function(ct) {
-                  return {
-                    name: ct,
-                    count: self.state.contents[ct].length
-                  }
-                })
+            kc.setEncryptionKeys(keys);
+            self.state.contents = kc.setContents(contents);
+
+            var categories = Object.keys(self.state.contents);
+            self.setState({
+              category: categories[0],
+              categories: categories.map(function(ct) {
+                return {
+                  name: ct,
+                  count: self.state.contents[ct].length
+                }
               })
+            })
+          }
+
+          queue(2)
+            .defer(asyncStorage.getItem, '1p.encryptionKeys')
+            .defer(asyncStorage.getItem, '1p.contents')
+            .await(function(error, keys, contents) {
+              if (error || !keys || !contents) {
+                queue(2)
+                  .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
+                  .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
+                  .await(setup.bind(self))
+              }
+              else {
+                setup(error, keys, contents);
+              }
             })
         });
       }
@@ -162,7 +183,7 @@
           <div className="main-container login-screen">
             <form id="login-form" className="form-wrapper cf">
               <input id="login_field" type="password" autofocus
-              placeholder="Enter your Master Password" disabled={disabled ? "disabled" : ""}
+              placeholder="Enter your Master Password"
               onChange={this.handleLoginChange} value={value} />
               <button id="submit_login" onClick={this.submitLogin} tabIndex="-1">LOGIN</button>
             </form>
