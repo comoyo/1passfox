@@ -3,7 +3,7 @@
 <p>1PassFox installation page</p>
 <script>
   // This URL must be a full url.
-  var manifestUrl = 'http://localhost:8000/package.manifest';
+  var manifestUrl = 'http://comoyo.github.io/1passfox/package.manifest';
   var req = navigator.mozApps.installPackage(manifestUrl);
   req.onsuccess = function() {
     alert(this.result.origin);

@@ -1,5 +1,5 @@
 {
   "name": "1PassFox",
-  "package_path" : "http://localhost:8000/1passfox.zip",
+  "package_path" : "http://comoyo.github.io/1passfox/1passfox.zip",
   "version": "1"
 }

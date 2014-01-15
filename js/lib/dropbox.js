@@ -23,7 +23,7 @@ cloud.dropbox.auth = new Dropbox.Client({
 
 cloud.dropbox.auth.authDriver(new Dropbox.AuthDriver.Popup({
   rememberUser: true,
-  receiverUrl: "http://localhost:8000/dropbox.html"
+  receiverUrl: "http://comoyo.github.io/1passfox/dropbox.html"
 }));
 
 cloud.dropbox.auth.onAuth = new CustomEvent('cloud.dropbox.authed');
