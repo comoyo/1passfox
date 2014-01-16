@@ -116,7 +116,7 @@
         if (!obj) {
           cloud.dropbox.auth.readFile('1Password.agilekeychain/data/default/' + item.uuid + '.1password', function(err, data) {
             var item = kc.getItem(data);
-            asyncStorage.setItem(itemDbName, function() {})
+            asyncStorage.setItem(itemDbName, item, function() {})
             getItemData(item);
           });
         }

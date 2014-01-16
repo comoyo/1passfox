@@ -19,7 +19,6 @@ cloud.dropbox.client = undefined;
 ------------------------*/
 cloud.dropbox.auth = new Dropbox.Client({
   key: "ioiuz7xcr9ig0u1",
-  redirectUrl: "https://comoyo.github.io/1passfox/1p.html"
 });
 
 //cloud.dropbox.auth.authDriver(new Dropbox.AuthDriver.Popup({

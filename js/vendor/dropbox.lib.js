@@ -503,7 +503,7 @@
 
     function Redirect(options) {
       Redirect.__super__.constructor.call(this, options);
-      this.receiverUrl = options.redirectUrl || this.baseUrl(options);
+      this.receiverUrl = this.baseUrl(options);
     }
 
     Redirect.prototype.baseUrl = function(options) {
@@ -762,7 +762,6 @@
       this._driver = null;
       this.authError = null;
       this._credentials = null;
-      this._redirectUrl = options.redirectUrl;
       this.setupUrls();
     }
 
