@@ -8,7 +8,7 @@ var csso = require('gulp-csso');
 var react = require('gulp-react');
 
 gulp.task('clean', function() {
-  gulp.src(['./build/js/**/*.js', './build/css/**/*.css'], { read: false })
+  gulp.src(['./build/js/**/*.js', './build/css/**/*.css', './build/img/**/*'], { read: false })
     .pipe(rimraf());
 });
 
@@ -31,6 +31,9 @@ gulp.task('build', function() {
     gulp.src('./css/*.css')
       .pipe(csso())
       .pipe(gulp.dest('./build/css'));
+
+    gulp.src('./img/**/*')
+      .pipe(gulp.dest('./build/img'));
   });
 });
 
