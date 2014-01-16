@@ -27,6 +27,7 @@
     },
 
     _setup: function setup(error, keys, contents) {
+      var self = this;
       if (error) {
         return alert("Error retrieving 1password files from Dropbox");
       }
