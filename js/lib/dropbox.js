@@ -18,13 +18,14 @@ cloud.dropbox.client = undefined;
 /* Auth
 ------------------------*/
 cloud.dropbox.auth = new Dropbox.Client({
-  key: "ioiuz7xcr9ig0u1"
+  key: "ioiuz7xcr9ig0u1",
+  redirectUrl: "https://comoyo.github.io/1passfox/1p.html"
 });
 
-cloud.dropbox.auth.authDriver(new Dropbox.AuthDriver.Popup({
-  rememberUser: true,
-  receiverUrl: "https://comoyo.github.io/1passfox/dropbox.html"
-}));
+//cloud.dropbox.auth.authDriver(new Dropbox.AuthDriver.Popup({
+//  rememberUser: true,
+//  receiverUrl: "https://comoyo.github.io/1passfox/dropbox.html"
+//}));
 
 cloud.dropbox.auth.onAuth = new CustomEvent('cloud.dropbox.authed');
 

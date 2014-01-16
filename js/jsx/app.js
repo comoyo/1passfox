@@ -26,48 +26,47 @@
       };
     },
 
-    componentDidMount: function() {
+    _setup: function setup(error, keys, contents) {
+      if (error) {
+        return alert("Error retrieving 1password files from Dropbox");
+      }
+
+      if (typeof keys === 'string') keys = JSON.parse(keys);
+      if (typeof contents === 'string') contents = JSON.parse(contents);
+
+      queue(2)
+        .defer(asyncStorage.setItem, '1p.encryptionKeys', keys)
+        .defer(asyncStorage.setItem, '1p.contents', contents)
+        .await(function(error) {
+          if (error) {
+            alert('There was an error when trying to save data in database: ' + error);
+          }
+        });
+
+      kc.setEncryptionKeys(keys);
+      self.state.contents = kc.setContents(contents);
+
+      var categories = Object.keys(self.state.contents);
+      self.setState({
+        category: categories[0],
+        categories: categories.map(function(ct) {
+          return {
+            name: ct,
+            count: self.state.contents[ct].length
+          }
+        })
+      })
+    },
+
+    authenticate: function() {
       var self = this;
       var client = cloud.dropbox.auth;
 
       if (!client.isAuthenticated()) {
         client.authenticate(function(error, client) {
           if (error || !client) {
-            alert("Error authenticating with Dropbox");
+            return console.error("Error authenticating with Dropbox");
           }
-
-          function setup(error, keys, contents) {
-            if (error) {
-              return alert("Error retrieving 1password files from Dropbox");
-            }
-
-            if (typeof keys === 'string') keys = JSON.parse(keys);
-            if (typeof contents === 'string') contents = JSON.parse(contents);
-
-            queue(2)
-              .defer(asyncStorage.setItem, '1p.encryptionKeys', keys)
-              .defer(asyncStorage.setItem, '1p.contents', contents)
-              .await(function(error) {
-                if (error) {
-                  alert('There was an error when trying to save data in database: ' + error);
-                }
-              });
-
-            kc.setEncryptionKeys(keys);
-            self.state.contents = kc.setContents(contents);
-
-            var categories = Object.keys(self.state.contents);
-            self.setState({
-              category: categories[0],
-              categories: categories.map(function(ct) {
-                return {
-                  name: ct,
-                  count: self.state.contents[ct].length
-                }
-              })
-            })
-          }
-
           queue(2)
             .defer(asyncStorage.getItem, '1p.encryptionKeys')
             .defer(asyncStorage.getItem, '1p.contents')
@@ -76,14 +75,18 @@
                 queue(2)
                   .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
                   .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
-                  .await(setup.bind(self))
+                  .await(self._setup.bind(self))
               }
               else {
-                setup(error, keys, contents);
+                self._setup.bind(self)(error, keys, contents);
               }
             })
         });
       }
+    },
+
+    componentDidMount: function() {
+      this.authenticate()
 
 //      var router = Router({
 //        '/': this.setState.bind(this, {nowShowing: ALL_TODOS}),
@@ -107,7 +110,7 @@
 
     switchToItem: function(item) {
       var self = this;
-      var itemDbName ='1pItem-' + item.uuid;
+      var itemDbName = '1pItem-' + item.uuid;
       asyncStorage.getItem(itemDbName, function(err, obj) {
         if (!obj) {
           cloud.dropbox.auth.readFile('1Password.agilekeychain/data/default/' + item.uuid + '.1password', function(err, data) {
@@ -201,7 +204,7 @@
     },
 
     submitLogin: function() {
-      this.setState({ loggedIn: !!kc.verifyPassword(this.state.loginField) });
+      this.setState({ loggedIn: !!kc.verifyPassword.bind(kc)(this.state.loginField) });
     },
 
     getList: function getList() {
