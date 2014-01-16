@@ -1,0 +1,16 @@
+{
+  "name": "1passfox",
+  "version": "1.0.0",
+  "description": "1Password mobile client ",
+  "main": "1p.html",
+  "author": "Sergi Mansilla",
+  "devDependencies": {
+    "gulp-uglify": "~0.1.0",
+    "gulp-concat": "~2.1.7",
+    "gulp-rimraf": "~0.0.8",
+    "gulp-react": "0.1.0",
+    "gulp-csso": "~0.1.7",
+    "event-stream": "~3.1.0"
+  },
+  "license": "Apache"
+}
