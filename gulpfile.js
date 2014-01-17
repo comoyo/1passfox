@@ -25,8 +25,8 @@ gulp.task('build', function() {
       .pipe(concat("components.js"))
       .pipe(gulp.dest('build/js'));
 
-    gulp.src(['manifest.webapp'])
-      .pipe(gulp.dest('build'));
+//    gulp.src(['manifest.webapp'])
+//      .pipe(gulp.dest('build'));
 
     gulp.src('./css/*.css')
       .pipe(csso())

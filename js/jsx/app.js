@@ -9,6 +9,8 @@
 
   window.kc = new Keychain();
 
+  var basePath = '1Password.agilekeychain/data/default/';
+
   var OneApp = React.createClass({
     getInitialState: function() {
 
@@ -26,8 +28,7 @@
       };
     },
 
-    _setup: function setup(error, keys, contents) {
-      var self = this;
+    _setup: function(error, keys, contents, avoidStorage) {
       if (error) {
         return alert("Error retrieving 1password files from Dropbox");
       }
@@ -35,50 +36,52 @@
       if (typeof keys === 'string') keys = JSON.parse(keys);
       if (typeof contents === 'string') contents = JSON.parse(contents);
 
-      queue(2)
-        .defer(asyncStorage.setItem, '1p.encryptionKeys', keys)
-        .defer(asyncStorage.setItem, '1p.contents', contents)
-        .await(function(error) {
-          if (error) {
-            alert('There was an error when trying to save data in database: ' + error);
-          }
-        });
+      if (avoidStorage !== true) {
+        queue(2)
+          .defer(asyncStorage.setItem, '1p.encryptionKeys', keys)
+          .defer(asyncStorage.setItem, '1p.contents', contents)
+          .await(function(error) {
+            if (error) {
+              alert('There was an error when saving data in database: ' + error);
+            }
+          });
+      }
 
       kc.setEncryptionKeys(keys);
-      self.state.contents = kc.setContents(contents);
+      this.state.contents = kc.setContents(contents);
 
-      var categories = Object.keys(self.state.contents);
-      self.setState({
+      var categories = Object.keys(this.state.contents);
+      this.setState({
         category: categories[0],
         categories: categories.map(function(ct) {
           return {
             name: ct,
-            count: self.state.contents[ct].length
+            count: this.state.contents[ct].length
           }
-        })
+        }, this)
       })
     },
 
+    _getContents: function() {
+      var readFile = cloud.dropbox.auth.readFile.bind(cloud.dropbox.auth);
+
+      queue(2)
+        .defer(asyncStorage.getItem, '1p.encryptionKeys')
+        .defer(asyncStorage.getItem, '1p.contents')
+        .await(function(error, keys, contents) {
+          if (error || !keys || !contents) {
+            return queue(2)
+              .defer(readFile, basePath + "encryptionKeys.js")
+              .defer(readFile, basePath + "contents.js")
+              .await(this._setup.bind(this))
+          }
+
+          return this._setup.bind(this)(error, keys, contents, true);
+        }.bind(this));
+    },
+
     authenticate: function() {
-      var self = this;
       var client = cloud.dropbox.auth;
-
-      function getContents() {
-        queue(2)
-          .defer(asyncStorage.getItem, '1p.encryptionKeys')
-          .defer(asyncStorage.getItem, '1p.contents')
-          .await(function(error, keys, contents) {
-            if (error || !keys || !contents) {
-              return queue(2)
-                .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
-                .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
-                .await(self._setup.bind(self))
-            }
-
-            return self._setup.bind(self)(error, keys, contents);
-          });
-      }
-
       if (!client.isAuthenticated()) {
         return client.authenticate(function(error, client) {
           if (error || !client) {
@@ -86,11 +89,11 @@
           }
 
           localStorage.setItem('dropbox_auth', JSON.stringify(client.credentials()))
-          return getContents();
-        });
+          return this._getContents();
+        }.bind(this));
       }
 
-      return getContents();
+      return this._getContents();
     },
 
     componentDidMount: function() {
@@ -121,7 +124,7 @@
       var itemDbName = '1pItem-' + item.uuid;
       asyncStorage.getItem(itemDbName, function(err, obj) {
         if (!obj) {
-          cloud.dropbox.auth.readFile('1Password.agilekeychain/data/default/' + item.uuid + '.1password', function(err, data) {
+          cloud.dropbox.auth.readFile(basePath + item.uuid + '.1password', function(err, data) {
             var item = kc.getItem(data);
             asyncStorage.setItem(itemDbName, item, function() {})
             getItemData(item);
@@ -166,7 +169,7 @@
     },
 
     render: function() {
-      var main = null;
+      var main;
       var value = this.state.loginField;
 
       if (this.state.loggedIn === true) {
