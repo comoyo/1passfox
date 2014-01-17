@@ -63,27 +63,34 @@
       var self = this;
       var client = cloud.dropbox.auth;
 
+      function getContents() {
+        queue(2)
+          .defer(asyncStorage.getItem, '1p.encryptionKeys')
+          .defer(asyncStorage.getItem, '1p.contents')
+          .await(function(error, keys, contents) {
+            if (error || !keys || !contents) {
+              return queue(2)
+                .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
+                .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
+                .await(self._setup.bind(self))
+            }
+
+            return self._setup.bind(self)(error, keys, contents);
+          });
+      }
+
       if (!client.isAuthenticated()) {
-        client.authenticate(function(error, client) {
+        return client.authenticate(function(error, client) {
           if (error || !client) {
             return console.error("Error authenticating with Dropbox");
           }
-          queue(2)
-            .defer(asyncStorage.getItem, '1p.encryptionKeys')
-            .defer(asyncStorage.getItem, '1p.contents')
-            .await(function(error, keys, contents) {
-              if (error || !keys || !contents) {
-                queue(2)
-                  .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/encryptionKeys.js")
-                  .defer(client.readFile.bind(client), "1Password.agilekeychain/data/default/contents.js")
-                  .await(self._setup.bind(self))
-              }
-              else {
-                self._setup.bind(self)(error, keys, contents);
-              }
-            })
+
+          localStorage.setItem('dropbox_auth', JSON.stringify(client.credentials()))
+          return getContents();
         });
       }
+
+      return getContents();
     },
 
     componentDidMount: function() {
