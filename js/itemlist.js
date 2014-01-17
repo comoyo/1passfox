@@ -29,9 +29,12 @@
     },
 
     render: function() {
-      var fields = this.props.item.fields.map(function(f) {
-        return React.DOM.li(null, f.name,": ", f.value)
-      });
+      var fields = [];
+      if (this.props.item && this.props.item.fields) {
+        fields = this.props.item.fields.map(function(f) {
+          return React.DOM.li(null, f.name,": ", f.value)
+        });
+      }
 
       return React.DOM.div(null, 
         React.DOM.ul(null, fields)

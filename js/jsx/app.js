@@ -19,12 +19,7 @@
         loggedIn: false,
         loginField: '',
         categories: [],
-        category: '',
-        selectedItem: {
-          uuid: 'D05256408DE8485886F15FA9C6B3198D',
-          title: 'A',
-          fields: []
-        }
+        category: ''
       };
     },
 
@@ -125,6 +120,10 @@
       asyncStorage.getItem(itemDbName, function(err, obj) {
         if (!obj) {
           cloud.dropbox.auth.readFile(basePath + item.uuid + '.1password', function(err, data) {
+            if (err)
+              return console.error(err);
+
+            data = JSON.parse(data);
             var item = kc.getItem(data);
             asyncStorage.setItem(itemDbName, item, function() {})
             getItemData(item);
@@ -138,6 +137,9 @@
       function getItemData(item) {
         var decryption_status;
         try {
+          if (typeof item === "string") {
+            item = JSON.parse(item);
+          }
           decryption_status = kc.decryptItem(item);
         }
         catch (e) {

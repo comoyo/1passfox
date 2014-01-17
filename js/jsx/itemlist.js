@@ -29,9 +29,12 @@
     },
 
     render: function() {
-      var fields = this.props.item.fields.map(function(f) {
-        return <li>{f.name}: {f.value}</li>
-      });
+      var fields = [];
+      if (this.props.item && this.props.item.fields) {
+        fields = this.props.item.fields.map(function(f) {
+          return <li>{f.name}: {f.value}</li>
+        });
+      }
 
       return <div>
         <ul>{fields}</ul>
