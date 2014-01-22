@@ -118,7 +118,7 @@ body.left-nav .main-content {
 
 .item-page {
   padding-top: 4rem;
-  background-color:#666;
+  background-color: #666;
   color: #fff;
   min-width: 320px;
   width: 800px;
@@ -164,7 +164,6 @@ body.left-nav .main-content {
 .topcoat-navigation-bar {
   height: 4rem;
 }
-
 
 /* Form wrapper styling */
 .form-wrapper {
@@ -257,6 +256,35 @@ body.left-nav .main-content {
 .form-wrapper button::-moz-focus-inner { /* remove extra button spacing for Mozilla Firefox */
   border: 0;
   padding: 0;
+}
+
+.form-wrapper button.dropbox {
+  overflow: visible;
+  position: relative;
+  /*float: right;*/
+  padding: 0;
+  cursor: pointer;
+  height: 40px;
+  font: bold 15px/40px 'lucida sans', 'trebuchet MS', 'Tahoma';
+  color: #fff;
+  /*text-transform: uppercase;*/
+  border-radius: 5px;
+  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);*/
+  /*pointer-events: none;*/
+  -moz-user-focus: ignore;
+  -moz-user-select: none;
+  /*-moz-user-input: disabled;*/
+  background: -moz-linear-gradient(center top, #168add, #007ee5) repeat scroll 0% 0% transparent;
+  border: 1px solid #0c6ebe;
+  width: 100%;
+}
+
+.form-wrapper button.dropbox:before { /* left arrow */
+  content: '';
+  position: absolute;
+  border: none;
+  top: 0;
+  left: 0;
 }
 
 .invalid {

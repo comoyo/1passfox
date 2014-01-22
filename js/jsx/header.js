@@ -33,11 +33,6 @@
           <div className="topcoat-navigation-bar__item center half">
             <h1 className="topcoat-navigation-bar__title">{this.props.title}</h1>
           </div>
-          <div className="topcoat-navigation-bar__item right quarter">
-            <a className="topcoat-icon-button--quiet">
-              <span className="topcoat-icon topcoat-icon--edit"></span>
-            </a>
-          </div>
         </div>
         );
     }

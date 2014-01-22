@@ -32,11 +32,6 @@
           ),
           React.DOM.div( {className:"topcoat-navigation-bar__item center half"}, 
             React.DOM.h1( {className:"topcoat-navigation-bar__title"}, this.props.title)
-          ),
-          React.DOM.div( {className:"topcoat-navigation-bar__item right quarter"}, 
-            React.DOM.a( {className:"topcoat-icon-button--quiet"}, 
-              React.DOM.span( {className:"topcoat-icon topcoat-icon--edit"})
-            )
           )
         )
         );

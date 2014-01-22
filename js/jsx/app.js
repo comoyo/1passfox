@@ -13,7 +13,6 @@
 
   var OneApp = React.createClass({
     getInitialState: function() {
-
       return {
         contents: [],
         loggedIn: false,
@@ -65,17 +64,18 @@
         .defer(asyncStorage.getItem, '1p.contents')
         .await(function(error, keys, contents) {
           if (error || !keys || !contents) {
-            return queue(2)
-              .defer(readFile, basePath + "encryptionKeys.js")
-              .defer(readFile, basePath + "contents.js")
-              .await(this._setup.bind(this))
+//            return queue(2)
+//              .defer(readFile, basePath + "encryptionKeys.js")
+//              .defer(readFile, basePath + "contents.js")
+//              .await(this._setup.bind(this))
+            return console.error("Unable to load password files.")
           }
 
           return this._setup.bind(this)(error, keys, contents, true);
         }.bind(this));
     },
 
-    authenticate: function() {
+    authenticateDropbox: function(e) {
       var client = cloud.dropbox.auth;
       if (!client.isAuthenticated()) {
         return client.authenticate(function(error, client) {
@@ -89,22 +89,6 @@
       }
 
       return this._getContents();
-    },
-
-    componentDidMount: function() {
-      this.authenticate()
-
-//      var router = Router({
-//        '/': this.setState.bind(this, {nowShowing: ALL_TODOS}),
-//        '/active': this.setState.bind(this, {nowShowing: ACTIVE_TODOS}),
-//        '/completed': this.setState.bind(this, {nowShowing: COMPLETED_TODOS})
-//      });
-//      router.init();
-//      this.refs.newField.getDOMNode().focus();
-    },
-
-    componentDidUpdate: function() {
-//      Utils.store('react-todos', this.state.todos);
     },
 
     switchToType: function(type) {
@@ -196,17 +180,24 @@
           </div>
         </div >
       } else {
-        var disabled = !cloud.dropbox.auth.isAuthenticated();
-        main = (
-          <div className="main-container login-screen">
+        var authenticated = cloud.dropbox.auth.isAuthenticated();
+//        console.log(cloud.dropbox.auth.isAuthenticated())
+        if (!authenticated) {
+          main = <div className="main-container dropbox-screen">
+            <form id="dropbox-form" className="form-wrapper cf">
+              <button className="dropbox" onClick={this.authenticateDropbox} tabIndex="-1">Login to dropbox</button>
+            </form>
+          </div>;
+        } else {
+          main = <div className="main-container login-screen">
             <form id="login-form" className="form-wrapper cf">
               <input id="login_field" type="password" autofocus
               placeholder="Enter your Master Password"
               onChange={this.handleLoginChange} value={value} />
-              <button id="submit_login" onClick={this.submitLogin} tabIndex="-1">LOGIN</button>
+              <button id="submit_login" onClick={this.verifyPassword} tabIndex="-1">LOGIN</button>
             </form>
-          </div>
-          );
+          </div>;
+        }
       }
 
       return <section id="main">{main}</section>;
@@ -216,8 +207,21 @@
       this.setState({ loginField: event.target.value });
     },
 
-    submitLogin: function() {
-      this.setState({ loggedIn: !!kc.verifyPassword.bind(kc)(this.state.loginField) });
+    verifyPassword: function() {
+      var self = this;
+      var verified = kc.verifyPassword(this.state.loginField)
+      if (verified === true) {
+        this.logoutCountDown = setTimeout(function() {
+          kc.lock();
+          self.setState({
+            loggedIn: false,
+            selectedItem: {}
+          });
+        }, 60000);
+        this.setState({ loggedIn: true });
+      }
+
+      return verified;
     },
 
     getList: function getList() {
