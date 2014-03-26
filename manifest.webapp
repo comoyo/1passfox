@@ -15,7 +15,6 @@
     "url": "http://sergimansilla.com"
   },
   "installs_allowed_from": ["*"],
-  "appcache_path": "/manifest.appcache",
   "locales": {
     "es": {
       "description": "Cliente de 1Password para Firefox OS",

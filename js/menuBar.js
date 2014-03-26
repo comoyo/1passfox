@@ -5,7 +5,7 @@
 (function(window) {
   'use strict';
 
-  window.MenuItem = React.createClass({
+  window.MenuItem = React.createClass({displayName: 'MenuItem',
     render: function() {
       return (
         React.DOM.li( {className:"topcoat-list__item side-nav__list__item"}, 
@@ -18,7 +18,7 @@
     }
   });
 
-  window.MenuBar = React.createClass({
+  window.MenuBar = React.createClass({displayName: 'MenuBar',
     handleClick: function(name) {
       this.props.onMenuClick(name)
     },

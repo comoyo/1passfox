@@ -5,7 +5,7 @@
 (function(window, React) {
   'use strict';
 
-  window.List = React.createClass({
+  window.List = React.createClass({displayName: 'List',
     handleClick: function(item) {
       this.props.onItemClick(item)
     },
@@ -23,7 +23,7 @@
     }
   });
 
-  window.Item = React.createClass({
+  window.Item = React.createClass({displayName: 'Item',
     getInitialState: function() {
       return { fields: [] };
     },

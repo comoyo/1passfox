@@ -5,7 +5,7 @@
 (function(window) {
   'use strict';
 
-  window.Header = React.createClass({
+  window.Header = React.createClass({displayName: 'Header',
 
     slide: function slide() {
       var cl = window.document.body.classList;

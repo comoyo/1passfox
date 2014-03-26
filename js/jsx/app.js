@@ -8,9 +8,13 @@
   React.initializeTouchEvents(true);
 
   window.kc = new Keychain();
+  window.localForageConfig = {
+    name        : '1passfox',
+    version     : 1.0,
+    storeName   : '1p-database',
+  };
 
   var basePath = '1Password.agilekeychain/data/default/';
-
   var OneApp = React.createClass({
     getInitialState: function() {
       return {
@@ -24,55 +28,60 @@
 
     _setup: function(error, keys, contents, avoidStorage) {
       if (error) {
-        return alert("Error retrieving 1password files from Dropbox");
+        return console.error("Error retrieving 1password files from Dropbox");
       }
 
-      if (typeof keys === 'string') keys = JSON.parse(keys);
-      if (typeof contents === 'string') contents = JSON.parse(contents);
+      if (typeof keys === 'string') {
+        keys = JSON.parse(keys);
+      }
+
+      if (typeof contents === 'string') {
+        contents = JSON.parse(contents);
+      }
 
       if (avoidStorage !== true) {
         queue(2)
-          .defer(asyncStorage.setItem, '1p.encryptionKeys', keys)
-          .defer(asyncStorage.setItem, '1p.contents', contents)
-          .await(function(error) {
-            if (error) {
-              alert('There was an error when saving data in database: ' + error);
-            }
-          });
-      }
-
-      kc.setEncryptionKeys(keys);
-      this.state.contents = kc.setContents(contents);
-
-      var categories = Object.keys(this.state.contents);
-      this.setState({
-        category: categories[0],
-        categories: categories.map(function(ct) {
-          return {
-            name: ct,
-            count: this.state.contents[ct].length
+        .defer(localforage.setItem, '1p.encryptionKeys', keys)
+        .defer(localforage.setItem, '1p.contents', contents)
+        .await(function(error) {
+          if (error) {
+            alert('There was an error when saving data in database: ' + error);
           }
-        }, this)
-      })
+        });
+
+        kc.setEncryptionKeys(keys);
+        this.state.contents = kc.setContents(contents);
+
+        var categories = Object.keys(this.state.contents);
+        this.setState({
+          category: categories[0],
+          categories: categories.map(function(ct) {
+            return {
+              name: ct,
+              count: this.state.contents[ct].length
+            };
+          }, this)
+        });
+      }
     },
 
     _getContents: function() {
       var readFile = cloud.dropbox.auth.readFile.bind(cloud.dropbox.auth);
 
-      queue(2)
-        .defer(asyncStorage.getItem, '1p.encryptionKeys')
-        .defer(asyncStorage.getItem, '1p.contents')
-        .await(function(error, keys, contents) {
-          if (error || !keys || !contents) {
-//            return queue(2)
-//              .defer(readFile, basePath + "encryptionKeys.js")
-//              .defer(readFile, basePath + "contents.js")
-//              .await(this._setup.bind(this))
-            return console.error("Unable to load password files.")
-          }
+      //queue(2)
+        //.defer(localforage.getItem, '1p.encryptionKeys')
+        //.defer(localforage.getItem, '1p.contents')
+        //.await(function(error, keys, contents) {
+          //if (error || !keys || !contents) {
+            return queue(2)
+              .defer(readFile, basePath + "encryptionKeys.js")
+              .defer(readFile, basePath + "contents.js")
+              .await(this._setup.bind(this));
+            //return console.error("Unable to load password files.");
+          //}
 
-          return this._setup.bind(this)(error, keys, contents, true);
-        }.bind(this));
+          //return this._setup.bind(this)(error, keys, contents, true);
+        //}.bind(this));
     },
 
     authenticateDropbox: function(e) {
@@ -80,15 +89,16 @@
       if (!client.isAuthenticated()) {
         return client.authenticate(function(error, client) {
           if (error || !client) {
+            console.log(error.toString(), client);
             return console.error("Error authenticating with Dropbox");
           }
 
-          localStorage.setItem('dropbox_auth', JSON.stringify(client.credentials()))
-          return this._getContents();
+          localStorage.setItem('dropbox_auth', JSON.stringify(client.credentials()));
+          this._getContents();
         }.bind(this));
+      } else {
+        this._getContents();
       }
-
-      return this._getContents();
     },
 
     switchToType: function(type) {
@@ -101,15 +111,17 @@
     switchToItem: function(item) {
       var self = this;
       var itemDbName = '1pItem-' + item.uuid;
-      asyncStorage.getItem(itemDbName, function(err, obj) {
+      localforage.getItem(itemDbName, function(err, obj) {
         if (!obj) {
-          cloud.dropbox.auth.readFile(basePath + item.uuid + '.1password', function(err, data) {
-            if (err)
+          var path = basePath + item.uuid + '.1password';
+          cloud.dropbox.auth.readFile(path, function(err, data) {
+            if (err) {
               return console.error(err);
+            }
 
             data = JSON.parse(data);
             var item = kc.getItem(data);
-            asyncStorage.setItem(itemDbName, item, function() {})
+            localforage.setItem(itemDbName, item, function() {});
             getItemData(item);
           });
         }
@@ -131,7 +143,8 @@
         }
 
         if (decryption_status != "OK") {
-          alert("An error occurred while processing item '" + item.uuid + "'.\n\n" + decryption_status);
+          alert("An error occurred while processing item '" +
+                item.uuid + "'.\n\n" + decryption_status);
           return;
         }
         var decryptedFields = item.decrypted_secure_contents;
@@ -150,7 +163,7 @@
           sectionTitle: item.title,
           selectedItem: obj,
           screen: 'detail'
-        })
+        });
       }
     },
 
