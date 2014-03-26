@@ -2,17 +2,35 @@
  * @jsx React.DOM
  */
 
+window.localForageConfig = {
+
+  name        : '1passfox',
+  version     : 1.0,
+  storeName   : '1p-database',
+};
+
 (function(window, React) {
   'use strict';
+
+  var cloud = {
+    dropbox: {
+      client: undefined
+    }
+  };
+
+  //var creds;
+  //try {
+    //creds = JSON.parse(localStorage.getItem('dropbox_auth'));
+  //} catch (e) {
+    //console.error('Error', e);
+  //}
+
+  cloud.dropbox.auth = new Dropbox.Client(/*creds ||*/ { key: "ioiuz7xcr9ig0u1" });
+  cloud.dropbox.auth.onAuth = new CustomEvent('cloud.dropbox.authed');
 
   React.initializeTouchEvents(true);
 
   window.kc = new Keychain();
-  window.localForageConfig = {
-    name        : '1passfox',
-    version     : 1.0,
-    storeName   : '1p-database',
-  };
 
   var basePath = '1Password.agilekeychain/data/default/';
   var OneApp = React.createClass({
@@ -87,13 +105,13 @@
     authenticateDropbox: function(e) {
       var client = cloud.dropbox.auth;
       if (!client.isAuthenticated()) {
-        return client.authenticate(function(error, client) {
-          if (error || !client) {
-            console.log(error.toString(), client);
-            return console.error("Error authenticating with Dropbox");
+        client.authenticate(function(error, client) {
+          if (error) {
+            return console.error("Error authenticating with Dropbox", error);
           }
 
-          localStorage.setItem('dropbox_auth', JSON.stringify(client.credentials()));
+          localStorage.setItem('dropbox_auth',
+                               JSON.stringify(client.credentials()));
           this._getContents();
         }.bind(this));
       } else {
