@@ -2,4 +2,3 @@ data/
 js/.module-cache
 .idea
 bower_components/
-node_modules/
