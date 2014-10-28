@@ -2,7 +2,7 @@
   "version": "1.0",
   "name": "1Passfox",
   "description": "1Password client for Firefox OS",
-  "launch_path": "/1p.html",
+  "launch_path": "1p.html",
   "icons": {
     "16": "/img/icons/1p16.png",
     "32": "/img/icons/1p32.png",
