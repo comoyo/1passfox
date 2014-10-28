@@ -7,7 +7,7 @@
 
   window.List = React.createClass({
     handleClick: function(item) {
-      this.props.onItemClick(item)
+      this.props.onItemClick(item);
     },
 
     shouldComponentUpdate: function(nextProps, nextState) {
@@ -15,11 +15,10 @@
     },
 
     render: function() {
-      var self = this;
       var createItem = function(item) {
-        return <li onClick={self.handleClick.bind(self, item)}>{item.title}</li>;
+        return <li onClick={this.handleClick.bind(this, item)}>{item.title}</li>;
       };
-      return <ul>{this.props.items.map(createItem)}</ul>;
+      return <ul>{this.props.items.map(createItem, this)}</ul>;
     }
   });
 

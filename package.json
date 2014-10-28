@@ -4,13 +4,19 @@
   "description": "1Password mobile client ",
   "main": "1p.html",
   "author": "Sergi Mansilla",
+  "dependencies" : {
+    "dropbox": "^0.10.3",
+    "localforage": "^1.1.1",
+    "queue-async": "^1.0.7"
+  },
   "devDependencies": {
-    "gulp-uglify": "~0.1.0",
+    "event-stream": "~3.1.0",
     "gulp-concat": "~2.1.7",
-    "gulp-rimraf": "~0.0.8",
-    "gulp-react": "0.1.0",
     "gulp-csso": "~0.1.7",
-    "event-stream": "~3.1.0"
+    "gulp-preprocess": "^1.1.1",
+    "gulp-react": "0.1.0",
+    "gulp-rimraf": "~0.0.8",
+    "gulp-uglify": "~0.1.0"
   },
   "license": "Apache"
 }

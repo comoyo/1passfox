@@ -8,8 +8,11 @@ var csso = require('gulp-csso');
 var react = require('gulp-react');
 
 gulp.task('clean', function() {
-  gulp.src(['./build/js/**/*.js', './build/css/**/*.css', './build/img/**/*'], { read: false })
-    .pipe(rimraf());
+  gulp.src([
+    './build/js/**/*.js',
+    './build/css/**/*.css',
+    './build/img/**/*'
+  ], { read: false }).pipe(rimraf());
 });
 
 gulp.task('build', function() {
