@@ -21,17 +21,19 @@ var client;
   //console.error('Error', e);
   //}
 
-  client = new Dropbox.Client({
-    key: 'ioiuz7xcr9ig0u1',
-    sandbox: true
-  });
+  client = new Dropbox.Client({ key: 'ioiuz7xcr9ig0u1' });
 
   client.authDriver(new Dropbox.AuthDriver.Popup({
-    receiverUrl: 'http://localhost:8000/oauth_receiver.html',
-    rememberUser: false
+    receiverUrl: 'http://localhost:8000/1p.html',
+    rememberUser: true
   }));
 
-  client.onAuth = new CustomEvent('authed');
+  if (document.URL.indexOf("#access_token") != -1){
+    console.log('access_token');
+    Dropbox.AuthDriver.Popup.oauthReceiver();
+    client.onAuth = new CustomEvent('authed');
+  }
+
 
   React.initializeTouchEvents(true);
 
@@ -108,8 +110,8 @@ var client;
       console.log(arguments);
       //if (error || !keys || !contents) {
       return queue(2)
-      .defer(readFile, basePath + "encryptionKeys.js")
-      .defer(readFile, basePath + "contents.js")
+      .defer(readFile, basePath + 'encryptionKeys.js')
+      .defer(readFile, basePath + 'contents.js')
       .await(this.initialize.bind(this));
       //}
 
@@ -118,23 +120,17 @@ var client;
     },
 
     authenticateDropbox: function(e) {
-      //if (client.isAuthenticated()) {
-        //return this.retrieveContents();
-      //}
-
-      var self = this
+      var self = this;
       client.authenticate(function(error, client) {
-        console.log("ASDASD", error, client)
-        if (error) {
-          return console.error("Error authenticating with Dropbox", error);
+        if (error || !client.isAuthenticated()) {
+          return console.error('Error authenticating with Dropbox', error);
         }
 
-        //localStorage.setItem('dropbox_auth',
-        //JSON.stringify(client.credentials()));
+        //localStorage.setItem('dropbox_auth', JSON.stringify(client.credentials()));
 
-        console.log(client)
+        console.log('Authenticated');
         self.retrieveContents();
-      })
+      });
     },
 
     switchToType: function(type) {
